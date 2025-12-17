@@ -1,1 +1,30 @@
 @import "tailwindcss";
+
+:root {
+  --text: #ebe9fc;
+  --background: #06060f;
+  --background-light: #0b0b1a;
+  --background-lighter: #0f0f22;
+  --background-lightest: #1c1c3d;
+  --primary: #ef7212;
+  --secondary: #b25217;
+  --accent: #ff9d68;
+}
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    @apply m-0 p-0 text-white;
+  }
+
+  body {
+    background-color: #06060f;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  ::-webkit-scrollbar {
+    display: none;
+  }
+}

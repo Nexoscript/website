@@ -1,0 +1,30 @@
+---
+import Member from "../components/Member.astro";
+---
+
+<section id="team" class="w-full flex flex-col">
+  <p class="p-8 text-3xl font-semibold">Team</p>
+  <div class="flex flex-wrap gap-4">
+    <Member
+      name="ezTxmMC"
+      image="/team/eztxmmc.png"
+      description="+6 years of development experience"
+      apply={false}
+      github="ezTxmMC"
+      youtube="ezTxmMC"
+    />
+    <Member
+      name="DragonRex004"
+      image="/team/dragonrex004.png"
+      description="+6 years of development experience"
+      apply={false}
+      github="DragonRex004"
+    />
+    <Member
+      name="You!"
+      image="/team/you.png"
+      description="Create awesome next gen programms with us."
+      apply={true}
+    />
+  </div>
+</section>

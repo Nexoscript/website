@@ -1,0 +1,78 @@
+---
+import { Github, Paperclip, Youtube } from "@lucide/astro";
+
+const { name, image, description, apply, github, youtube } = Astro.props;
+---
+
+<div
+  class="relative w-full sm:w-full md:w-[calc(50%-0.75rem)] lg:w-[calc(25%-0.75rem)] p-8 flex flex-col items-center gap-4 bg-(--background-light) border border-(--background-lightest) rounded-lg"
+>
+  <img src={image} alt={name} class="w-28 h-28 rounded-full" />
+  <div class="mb-16 flex flex-col items-center gap-4">
+    <p class="text-xl font-semibold">{name}</p>
+    <p class="text-center">{description}</p>
+  </div>
+  <div class="absolute bottom-8 flex flex-wrap gap-2">
+    {
+      !apply && (
+        <>
+          {github && (
+            <button
+              class="member-github-link px-4 py-2 flex items-center gap-2 border border-(--background-lightest) rounded-lg cursor-pointer transition-all duration-200 ease-in-out hover:bg-(--background) hover:brightness-125"
+              data-github={github}
+            >
+              <Github class="w-6 h-6" />
+              <p>GitHub</p>
+            </button>
+          )}
+          {youtube && (
+            <button
+              class="member-youtube-link px-4 py-2 flex items-center gap-2 border border-(--background-lightest) rounded-lg cursor-pointer transition-all duration-200 ease-in-out hover:bg-(--background) hover:brightness-125"
+              data-youtube={youtube}
+            >
+              <Youtube class="w-6 h-6" />
+              <p>YouTube</p>
+            </button>
+          )}
+        </>
+      )
+    }
+    {
+      apply && (
+        <button
+          class="member-apply-link px-4 py-2 flex items-center gap-2 border border-(--background-lightest) rounded-lg cursor-pointer transition-all duration-200 ease-in-out hover:bg-(--background) hover:brightness-125"
+          data-apply={apply}
+        >
+          <Paperclip class="w-6 h-6" />
+          <p>Apply</p>
+        </button>
+      )
+    }
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll(".member-apply-link").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      window.open(`https://discord.gg/ebhpnTFqnz`, "_blank");
+    });
+  });
+
+  document.querySelectorAll(".member-github-link").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const github = (btn as HTMLElement).dataset.github;
+      if (github) {
+        window.open(`https://github.com/${github}`, "_blank");
+      }
+    });
+  });
+
+  document.querySelectorAll(".member-youtube-link").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const youtube = (btn as HTMLElement).dataset.youtube;
+      if (youtube) {
+        window.open(`https://youtube.com/@${youtube}`, "_blank");
+      }
+    });
+  });
+</script>

@@ -1,0 +1,35 @@
+---
+import { Github } from "@lucide/astro";
+
+const { name, description, path } = Astro.props;
+---
+
+<div
+  class="relative w-full sm:w-full md:w-[calc(50%-0.75rem)] lg:w-[calc(25%-0.75rem)] p-8 flex flex-col gap-4 bg-(--background-light) border border-(--background-lightest) rounded-lg"
+>
+  <p class="text-xl font-semibold">{name}</p>
+  <div class="mb-16">
+    <p>Description:</p>
+    <p>{description}</p>
+  </div>
+  <div class="absolute bottom-8">
+    <button
+      class="project-github-link px-4 py-2 flex items-center gap-2 border border-(--background-lightest) rounded-lg cursor-pointer transition-all duration-200 ease-in-out hover:bg-(--background) hover:brightness-125"
+      data-path={path}
+    >
+      <Github class="w-6 h-6" />
+      <p>GitHub</p>
+    </button>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll(".project-github-link").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const repo = (btn as HTMLElement).dataset.path;
+      if (repo) {
+        window.open(`https://github.com/Nexoscript/${repo}`, "_blank");
+      }
+    });
+  });
+</script>
