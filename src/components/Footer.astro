@@ -3,7 +3,7 @@ import { Github } from "@lucide/astro";
 ---
 
 <footer
-  class="mt-12 px-96 sm:px-8 md:px-16 lg:px-32 xl:px-64 w-screen h-80 flex justify-center items-center border-t border-t-(--background-lighter)"
+  class="relative mt-12 px-96 sm:px-8 md:px-16 lg:px-32 xl:px-64 w-screen h-80 flex flex-col justify-center items-center border-t border-t-(--background-lighter)"
 >
   <div class="flex gap-32">
     <div class="w-80 flex flex-col">
@@ -30,5 +30,19 @@ import { Github } from "@lucide/astro";
       <br />
       <a href="https://github.com/Nexoscript">GitHub</a>
     </div>
+    <div class="flex flex-col">
+      <p class="text-xl font-semibold">Legal</p>
+      <br />
+      <a href="https://eztxm.de/imprint">Imprint</a>
+    </div>
   </div>
+  <p id="copyright" class="absolute bottom-0 py-2"></p>
 </footer>
+
+<script>
+  const copyright = document.getElementById("copyright");
+  if (copyright) {
+    const year = new Date().getFullYear();
+    copyright.innerHTML = `Nexoscript &copy; ${year === 2025 ? year : "2025-" + year} - All rights reserved`;
+  }
+</script>

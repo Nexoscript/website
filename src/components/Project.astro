@@ -1,20 +1,46 @@
 ---
 import { Github } from "@lucide/astro";
 
-const { name, description, path } = Astro.props;
+const { name, languages, description, path } = Astro.props;
+
+function getColor(language: string) {
+  switch (language.toLowerCase()) {
+    case "java":
+      return "#b07219";
+    case "go":
+      return "#00add8";
+    case "c++":
+      return "#f34b7d";
+    case "astro":
+      return "#9933ff";
+    default:
+      return "#999999";
+  }
+}
 ---
 
 <div
   class="relative w-full sm:w-full md:w-[calc(50%-0.75rem)] lg:w-[calc(25%-0.75rem)] p-8 flex flex-col gap-4 bg-(--background-light) border border-(--background-lightest) rounded-lg"
 >
-  <p class="text-xl font-semibold">{name}</p>
+  <div class="flex gap-2">
+    <p class="text-xl font-semibold">{name}</p>
+    {
+      languages.map((language: string) => (
+        <p
+          class="px-2 rounded-lg text-white"
+          style={`background-color: ${getColor(language)}`}
+        >
+          {language}
+        </p>
+      ))
+    }
+  </div>
   <div class="mb-16">
-    <p>Description:</p>
     <p>{description}</p>
   </div>
   <div class="absolute bottom-8">
     <button
-      class="project-github-link px-4 py-2 flex items-center gap-2 border border-(--background-lightest) rounded-lg cursor-pointer transition-all duration-200 ease-in-out hover:bg-(--background) hover:brightness-125"
+      class="project-github-link px-4 py-2 flex items-center gap-2 border border-(--background-lightest) rounded-lg cursor-pointer transition-all duration-200 ease-in-out hover:bg-(--background-lighter) hover:brightness-125"
       data-path={path}
     >
       <Github class="w-6 h-6" />

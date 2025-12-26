@@ -1,7 +1,8 @@
 ---
-import { Github, Paperclip, Youtube } from "@lucide/astro";
+import { Github, Paperclip, Twitch, Youtube } from "@lucide/astro";
 
-const { name, image, description, apply, github, youtube } = Astro.props;
+const { name, image, description, apply, github, youtube, twitch } =
+  Astro.props;
 ---
 
 <div
@@ -18,7 +19,7 @@ const { name, image, description, apply, github, youtube } = Astro.props;
         <>
           {github && (
             <button
-              class="member-github-link px-4 py-2 flex items-center gap-2 border border-(--background-lightest) rounded-lg cursor-pointer transition-all duration-200 ease-in-out hover:bg-(--background) hover:brightness-125"
+              class="member-github-link px-4 py-2 flex items-center gap-2 border border-(--background-lightest) rounded-lg cursor-pointer transition-all duration-200 ease-in-out hover:bg-(--background-lighter) hover:brightness-125"
               data-github={github}
             >
               <Github class="w-6 h-6" />
@@ -27,11 +28,20 @@ const { name, image, description, apply, github, youtube } = Astro.props;
           )}
           {youtube && (
             <button
-              class="member-youtube-link px-4 py-2 flex items-center gap-2 border border-(--background-lightest) rounded-lg cursor-pointer transition-all duration-200 ease-in-out hover:bg-(--background) hover:brightness-125"
+              class="member-youtube-link px-4 py-2 flex items-center gap-2 border border-(--background-lightest) rounded-lg cursor-pointer transition-all duration-200 ease-in-out hover:bg-(--background-lighter) hover:brightness-125"
               data-youtube={youtube}
             >
               <Youtube class="w-6 h-6" />
               <p>YouTube</p>
+            </button>
+          )}
+          {twitch && (
+            <button
+              class="member-twitch-link px-4 py-2 flex items-center gap-2 border border-(--background-lightest) rounded-lg cursor-pointer transition-all duration-200 ease-in-out hover:bg-(--background-lighter) hover:brightness-125"
+              data-twitch={twitch}
+            >
+              <Twitch class="w-6 h-6" />
+              <p>Twitch</p>
             </button>
           )}
         </>
@@ -40,7 +50,7 @@ const { name, image, description, apply, github, youtube } = Astro.props;
     {
       apply && (
         <button
-          class="member-apply-link px-4 py-2 flex items-center gap-2 border border-(--background-lightest) rounded-lg cursor-pointer transition-all duration-200 ease-in-out hover:bg-(--background) hover:brightness-125"
+          class="member-apply-link px-4 py-2 flex items-center gap-2 border border-(--background-lightest) rounded-lg cursor-pointer transition-all duration-200 ease-in-out hover:bg-(--background-lighter) hover:brightness-125"
           data-apply={apply}
         >
           <Paperclip class="w-6 h-6" />
@@ -72,6 +82,15 @@ const { name, image, description, apply, github, youtube } = Astro.props;
       const youtube = (btn as HTMLElement).dataset.youtube;
       if (youtube) {
         window.open(`https://youtube.com/@${youtube}`, "_blank");
+      }
+    });
+  });
+
+  document.querySelectorAll(".member-twitch-link").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const twitch = (btn as HTMLElement).dataset.twitch;
+      if (twitch) {
+        window.open(`https://twitch.tv/${twitch}`, "_blank");
       }
     });
   });

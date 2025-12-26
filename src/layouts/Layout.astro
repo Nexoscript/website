@@ -11,13 +11,17 @@ import Footer from "../components/Footer.astro";
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" type="image/ico" href="/favicon.ico" />
     <meta name="generator" content={Astro.generator} />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="frame-src 'self' https://challenges.cloudflare.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com; child-src 'self' https://challenges.cloudflare.com;"
+    />
     <title>Nexoscript</title>
   </head>
   <body class="w-screen min-h-screen flex flex-col gap-8 bg-(--background)">
-    <Header client:load />
+    <Header />
     <main class="px-96 sm:px-8 md:px-16 lg:px-32 xl:px-64 flex flex-col gap-6">
       <slot />
     </main>
-    <Footer client:load />
+    <Footer />
   </body>
 </html>

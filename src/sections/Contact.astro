@@ -1,0 +1,176 @@
+---
+
+---
+
+<section
+  id="contact"
+  class="w-full flex flex-col bg-(--background) text-(--text)"
+>
+  <p class="p-8 text-3xl font-semibold">Contact</p>
+  <form
+    id="contact-form"
+    class="p-6 flex flex-col gap-4 bg-(--background-light) border border-(--background-lightest) rounded-lg"
+  >
+    <div class="w-full flex gap-4">
+      <input
+        name="name"
+        required
+        placeholder="Name"
+        class="flex-1 rounded-lg bg-(--background-lighter) px-4 py-3"
+      />
+      <input
+        name="email"
+        type="email"
+        required
+        placeholder="Email"
+        class="flex-1 rounded-lg bg-(--background-lighter) px-4 py-3"
+      />
+    </div>
+    <textarea
+      name="message"
+      required
+      rows="5"
+      placeholder="Message"
+      class="rounded-xl bg-(--background-lighter) px-4 py-3 resize-none"
+    ></textarea>
+    <div id="turnstile-widget" class="min-h-16.25"></div>
+    <button
+      type="submit"
+      class="mt-2 rounded-xl bg-(--primary) px-6 py-3 font-semibold text-black hover:bg-(--accent) disabled:opacity-50 disabled:cursor-not-allowed"
+    >
+      Send message
+    </button>
+    <p id="form-message" class="text-sm hidden"></p>
+  </form>
+</section>
+
+<script>
+  let turnstileLoaded = false;
+  let widgetId: string | null = null;
+
+  // Load Turnstile script
+  const script = document.createElement("script");
+  script.src =
+    "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+  script.async = true;
+  script.defer = true;
+  script.onload = () => {
+    turnstileLoaded = true;
+    renderTurnstile();
+  };
+  document.head.appendChild(script);
+
+  function renderTurnstile() {
+    if (!turnstileLoaded || !(window as any).turnstile) {
+      setTimeout(renderTurnstile, 100);
+      return;
+    }
+
+    try {
+      const container = document.getElementById("turnstile-widget");
+      if (container && !widgetId) {
+        widgetId = (window as any).turnstile.render("#turnstile-widget", {
+          sitekey: "0x4AAAAAACJLRahSOte2nhUO",
+          theme: "dark",
+          size: "normal",
+          callback: function (token: string) {
+            console.log("Turnstile verified:", token);
+          },
+          "error-callback": function () {
+            console.error("Turnstile error");
+            showMessage(
+              "Verification failed. Please refresh the page.",
+              "error"
+            );
+          },
+          "expired-callback": function () {
+            console.log("Turnstile expired");
+          },
+        });
+      }
+    } catch (error) {
+      console.error("Failed to render Turnstile:", error);
+      showMessage(
+        "Could not load verification. Please refresh the page.",
+        "error"
+      );
+    }
+  }
+
+  // Initialize form
+  function initForm() {
+    const form = document.getElementById("contact-form") as HTMLFormElement;
+    const messageEl = document.getElementById("form-message") as HTMLElement;
+    const submitBtn = form?.querySelector(
+      'button[type="submit"]'
+    ) as HTMLButtonElement;
+
+    if (!form) return;
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const token = (window as any).turnstile?.getResponse(widgetId);
+
+      if (!token) {
+        showMessage("Please complete the verification", "error");
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Sending...";
+
+      try {
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData);
+
+        const response = await fetch("/api/contact", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...data, token }),
+        });
+
+        if (response.ok) {
+          form.reset();
+          if ((window as any).turnstile && widgetId) {
+            (window as any).turnstile.reset(widgetId);
+          }
+          showMessage("Message sent successfully!", "success");
+        } else {
+          const errorData = await response.json().catch(() => ({}));
+          showMessage(
+            errorData.error || "Failed to send message. Please try again.",
+            "error"
+          );
+        }
+      } catch (error) {
+        console.error("Form submission error:", error);
+        showMessage("An error occurred. Please try again.", "error");
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Send message";
+      }
+    });
+  }
+
+  function showMessage(text: string, type: "success" | "error") {
+    const messageEl = document.getElementById("form-message") as HTMLElement;
+    if (messageEl) {
+      messageEl.textContent = text;
+      messageEl.className = `text-sm ${type === "success" ? "text-green-500" : "text-red-500"}`;
+      messageEl.classList.remove("hidden");
+      setTimeout(() => messageEl.classList.add("hidden"), 5000);
+    }
+  }
+
+  // Initialize when DOM is ready
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", () => {
+      initForm();
+      renderTurnstile();
+    });
+  } else {
+    initForm();
+    renderTurnstile();
+  }
+</script>
