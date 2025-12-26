@@ -4,12 +4,23 @@
 
 <section
   id="contact"
-  class="w-full flex flex-col bg-(--background) text-(--text)"
+  class="relative w-full flex flex-col bg-(--background) text-(--text) overflow-hidden"
 >
   <p class="p-8 text-3xl font-semibold">Contact</p>
+
+  <!-- BACKGROUND BLUR (behind everything) -->
+  <div class="pointer-events-none absolute inset-0 -z-10">
+    <div
+      class="absolute -inset-32 bg-gradient-to-br from-(--primary)/15 via-transparent to-(--accent)/15 blur-3xl opacity-80"
+    >
+    </div>
+  </div>
+
+  <!-- FORM (dimmed & disabled while WIP) -->
   <form
     id="contact-form"
-    class="p-6 flex flex-col gap-4 bg-(--background-light) border border-(--background-lightest) rounded-lg"
+    class="relative p-6 flex flex-col gap-4 bg-(--background-light)/80 border border-(--background-lightest) rounded-lg backdrop-blur-md opacity-60 pointer-events-none"
+    aria-disabled="true"
   >
     <div class="w-full flex gap-4">
       <input
@@ -33,22 +44,52 @@
       placeholder="Message"
       class="rounded-xl bg-(--background-lighter) px-4 py-3 resize-none"
     ></textarea>
-    <div id="turnstile-widget" class="min-h-16.25"></div>
+    <div id="turnstile-widget" class="min-h-[65px]"></div>
     <button
       type="submit"
-      class="mt-2 rounded-xl bg-(--primary) px-6 py-3 font-semibold text-black hover:bg-(--accent) disabled:opacity-50 disabled:cursor-not-allowed"
+      disabled
+      class="mt-2 rounded-xl bg-(--primary) px-6 py-3 font-semibold text-black opacity-60 cursor-not-allowed"
     >
       Send message
     </button>
     <p id="form-message" class="text-sm hidden"></p>
   </form>
+
+  <!-- CENTER LOCK + WIP BADGE -->
+  <div
+    class="pointer-events-none absolute inset-0 flex items-center justify-center"
+  >
+    <div
+      class="flex flex-col items-center gap-3 rounded-2xl bg-black/60 px-6 py-4 border border-white/10 shadow-lg"
+    >
+      <div
+        class="flex items-center justify-center h-12 w-12 rounded-full bg-(--background-lighter)/70 border border-white/10"
+      >
+        <span class="text-2xl">🔒</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span
+          class="text-xs font-semibold tracking-[0.18em] uppercase text-white/70"
+        >
+          Work in progress
+        </span>
+        <span
+          class="px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wide bg-(--accent)/20 text-(--accent) border border-(--accent)/40"
+        >
+          WIP
+        </span>
+      </div>
+      <p class="text-xs text-white/60 text-center max-w-xs">
+        This contact form is not available yet. Check back soon.
+      </p>
+    </div>
+  </div>
 </section>
 
 <script>
   let turnstileLoaded = false;
-  let widgetId: string | null = null;
+  let widgetId = null;
 
-  // Load Turnstile script
   const script = document.createElement("script");
   script.src =
     "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
@@ -61,7 +102,7 @@
   document.head.appendChild(script);
 
   function renderTurnstile() {
-    if (!turnstileLoaded || !(window as any).turnstile) {
+    if (!turnstileLoaded || !window.turnstile) {
       setTimeout(renderTurnstile, 100);
       return;
     }
@@ -69,11 +110,11 @@
     try {
       const container = document.getElementById("turnstile-widget");
       if (container && !widgetId) {
-        widgetId = (window as any).turnstile.render("#turnstile-widget", {
+        widgetId = window.turnstile.render("#turnstile-widget", {
           sitekey: "0x4AAAAAACJLRahSOte2nhUO",
           theme: "dark",
           size: "normal",
-          callback: function (token: string) {
+          callback: function (token) {
             console.log("Turnstile verified:", token);
           },
           "error-callback": function () {
@@ -97,10 +138,8 @@
     }
   }
 
-  // Initialize form
   function initForm() {
     const form = document.getElementById("contact-form") as HTMLFormElement;
-    const messageEl = document.getElementById("form-message") as HTMLElement;
     const submitBtn = form?.querySelector(
       'button[type="submit"]'
     ) as HTMLButtonElement;
@@ -110,7 +149,7 @@
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      const token = (window as any).turnstile?.getResponse(widgetId);
+      const token = window.turnstile?.getResponse(widgetId);
 
       if (!token) {
         showMessage("Please complete the verification", "error");
@@ -132,8 +171,8 @@
 
         if (response.ok) {
           form.reset();
-          if ((window as any).turnstile && widgetId) {
-            (window as any).turnstile.reset(widgetId);
+          if (window.turnstile && widgetId) {
+            window.turnstile.reset(widgetId);
           }
           showMessage("Message sent successfully!", "success");
         } else {
@@ -153,17 +192,18 @@
     });
   }
 
-  function showMessage(text: string, type: "success" | "error") {
-    const messageEl = document.getElementById("form-message") as HTMLElement;
+  function showMessage(text: string, type: string) {
+    const messageEl = document.getElementById("form-message");
     if (messageEl) {
       messageEl.textContent = text;
-      messageEl.className = `text-sm ${type === "success" ? "text-green-500" : "text-red-500"}`;
+      messageEl.className = `text-sm ${
+        type === "success" ? "text-green-500" : "text-red-500"
+      }`;
       messageEl.classList.remove("hidden");
       setTimeout(() => messageEl.classList.add("hidden"), 5000);
     }
   }
 
-  // Initialize when DOM is ready
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", () => {
       initForm();
