@@ -11,7 +11,7 @@ const cache = new Map<string, ReleaseCache>();
 
 async function fetchLatestRelease(repo: string) {
   const res = await fetch(
-    `https://api.github.com/repos/Nexoscript/${repo}/releases/latest`,
+    `https://api.github.com/repos/Nexoscript/${repo}/releases`,
     {
       headers: {
         Accept: "application/vnd.github+json",
@@ -24,8 +24,11 @@ async function fetchLatestRelease(repo: string) {
 
   const json = await res.json();
 
+  // The GitHub releases API returns an array, so get the first release
+  const latest = Array.isArray(json) && json.length > 0 ? json[0] : null;
+
   cache.set(repo, {
-    title: json.name ?? json.tag_name ?? null,
+    title: latest ? latest.name ?? latest.tag_name ?? null : null,
     fetchedAt: Date.now(),
   });
 }

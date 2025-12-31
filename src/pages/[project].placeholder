@@ -1,0 +1,14 @@
+---
+import Layout from "../layouts/Layout.astro";
+import About from "../sections/About.astro";
+import Contact from "../sections/Contact.astro";
+import Projects from "../sections/Projects.astro";
+import Team from "../sections/Team.astro";
+---
+
+<Layout>
+  <About />
+  <Projects />
+  <Team />
+  <Contact />
+</Layout>

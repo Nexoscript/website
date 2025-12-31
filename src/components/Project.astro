@@ -38,11 +38,7 @@ function getColor(language: string) {
         ))
       }
     </div>
-    <p
-      data-path={path}
-      class="project-version px-2 rounded-lg text-white bg-green-600"
-    >
-    </p>
+    <p data-path={path} class="project-version px-2 rounded-lg text-white"></p>
   </div>
   <div class="mb-16">
     <p>{description}</p>
@@ -78,6 +74,7 @@ function getColor(language: string) {
         return;
       }
       element.innerHTML = version;
+      element.classList.add("bg-green-600");
     }
   });
 </script>
