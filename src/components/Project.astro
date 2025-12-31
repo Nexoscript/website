@@ -24,18 +24,25 @@ function getColor(language: string) {
 <div
   class="relative w-full sm:w-full md:w-[calc(50%-0.75rem)] lg:w-[calc(25%-0.75rem)] p-8 flex flex-col gap-4 bg-(--background-light) border border-(--background-lightest) rounded-lg"
 >
-  <div class="flex gap-2">
-    <p class="text-xl font-semibold">{name}</p>
-    {
-      languages.map((language: string) => (
-        <p
-          class="px-2 rounded-lg text-white"
-          style={`background-color: ${getColor(language)}`}
-        >
-          {language}
-        </p>
-      ))
-    }
+  <div class="flex gap-2 justify-between">
+    <div class="flex gap-2">
+      <p class="text-xl font-semibold">{name}</p>
+      {
+        languages.map((language: string) => (
+          <p
+            class="px-2 rounded-lg text-white"
+            style={`background-color: ${getColor(language)}`}
+          >
+            {language}
+          </p>
+        ))
+      }
+    </div>
+    <p
+      data-path={path}
+      class="project-version px-2 rounded-lg text-white bg-green-600"
+    >
+    </p>
   </div>
   <div class="mb-16">
     <p>{description}</p>
@@ -59,5 +66,18 @@ function getColor(language: string) {
         window.open(`https://github.com/Nexoscript/${repo}`, "_blank");
       }
     });
+  });
+  document.querySelectorAll(".project-version").forEach(async (element) => {
+    const repo = (element as HTMLElement).dataset.path;
+    if (repo) {
+      const res = await fetch("/api/latest-releases");
+      const data = await res.json();
+      const version = data[repo];
+      if (!version) {
+        element.remove();
+        return;
+      }
+      element.innerHTML = version;
+    }
   });
 </script>
